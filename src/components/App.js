@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import Modal from './Modal/Modal'
 import Searchbar from './Searchbar/Searchbar';
+import Modal from './Modal/Modal'
 import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
 import Load from './Loader/Loader';
@@ -9,7 +9,94 @@ import '../stylesheets/normalize.css';
 import '../stylesheets/main.css';
 import { ToastContainer } from "react-toastify";
 
-class App extends Component {
+/*axios.defaults.headers.common['Authorization'] = 'Bearer 19150755-18ebc4fb910ab3d1add5e1d5a';
+
+const fetchPhotos = ({ key= '19150755-18ebc4fb910ab3d1add5e1d5a', searchQuery= '', page= 1 }) => {
+  return axios
+  .get(`https://pixabay.com/api/?page=${page}&key=${key}&image_type=photo&orientation=horizontal&per_page=12`)
+      .then(response => response.data.hits )
+}*/
+
+export default function App() {
+  const [photos, setPhotos] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [largePhoto, setLargePhoto] = useState('');
+
+  const KEY = useRef('19150755-18ebc4fb910ab3d1add5e1d5a');
+  const URL = useRef('https://pixabay.com/api/');
+
+  useEffect(() => {
+    setLoading(true);
+    axios
+       .get(`${URL.current}?q=${searchQuery}&page=${page}&key=${KEY.current}&image_type=photo&orientation=horizontal&per_page=12`)
+      .then(response => response.data.hits).then(setPhotos)
+      .catch(error=> setError(error))
+      .finally(() => setLoading(true));
+  }, [searchQuery, page]);
+  
+  const handleSearchSubmit = searchQuery => {
+    const normalizedSearchQuery = searchQuery.toLowerCase().trim();
+    setSearchQuery(normalizedSearchQuery);
+  };
+
+  const onButtonClick = e => {
+    e.preventDefault();
+    setPage(page + 1);
+  };
+   
+  const toggleModal = (photo) => {
+    //setShowModal(!showModal );
+    console.log('largeImageURL', photo.largeImageURL);
+    console.log('tags', photo.tags);
+    setLargePhoto(photo);
+  };
+
+  return (
+    <>
+      <Searchbar
+       onSubmit={handleSearchSubmit}
+      />
+      {error && <h1>Error, try again later</h1>}
+
+      {showModal &&
+          <Modal onClose={toggleModal}>
+        <img src={largePhoto.largeImageURL} alt={largePhoto.tags}
+        />
+        </Modal>}
+      
+      {photos.length > 0 ?
+          <ImageGallery
+              photos={photos}
+        onClick={toggleModal}
+        >
+        </ImageGallery> : null}
+      
+      {loading &&
+          <Load 
+          type="ThreeDots"
+          color="#3f51b5"
+          height={45}
+          width={45}
+          timeout={6000}
+          />}
+      
+        {photos.length >= 11 ?
+          <Button
+            aria-label='Load more'
+          onClick={onButtonClick}
+        >
+          </Button> : null}
+
+        <ToastContainer autoClose={2000}/>
+    </>
+  )
+}
+
+/*class App extends Component {
   state = {
     photos: [],
     searchQuery: '',
@@ -115,4 +202,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default App;*/

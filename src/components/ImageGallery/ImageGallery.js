@@ -7,7 +7,7 @@ import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
 function ImageGallery({ photos, onClick } ) {
     return (
       <ul className={styles.imageGallery}>
-        {photos.map(( photo ) => (<ImageGalleryItem key={photo.id} onClick={() => onClick(photo.largeImageURL)}
+        {photos.map(( photo ) => (<ImageGalleryItem key={photo.id} onClick={() => onClick(photo)}
           photo={photo}
           ></ImageGalleryItem>))}
       </ul> 
