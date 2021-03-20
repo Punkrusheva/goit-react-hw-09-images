@@ -23,12 +23,23 @@ export default function App() {
 
   useEffect(() => {
     setLoading(true);
+    setPhotos([]);
     axios
-       .get(`${URL.current}?q=${searchQuery}&page=${page}&key=${KEY.current}&image_type=photo&orientation=horizontal&per_page=12`)
+      .get(`${URL.current}?q=${searchQuery}&page=1&key=${KEY.current}&image_type=photo&orientation=horizontal&per_page=12`)
       .then(response => response.data.hits).then(setPhotos)
+      .catch(error => setError(error))
+      .finally(() => setLoading(false));
+  }, [searchQuery]);
+
+  useEffect(() => {
+    setLoading(true);
+    
+    axios
+      .get(`${URL.current}?q=${searchQuery}&page=${page}&key=${KEY.current}&image_type=photo&orientation=horizontal&per_page=12`)
+      .then(response => {setPhotos(prevPhotos => [...prevPhotos, ...response.data.hits])})
       .catch(error=> setError(error))
-      .finally(() => setLoading(true));
-  }, [searchQuery, page]);
+      .finally(() => { (setLoading(false)); window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth', }) });
+  }, [page]);
   
   const handleSearchSubmit = searchQuery => {
     const normalizedSearchQuery = searchQuery.toLowerCase().trim();
@@ -53,7 +64,7 @@ export default function App() {
        onSubmit={handleSearchSubmit}
       />
       {error && <h1>Error, try again later</h1>}
-
+      
       {showModal &&
           <Modal onClose={toggleModal}>
         <img src={largePhoto.largeImageURL} alt={largePhoto.tags}
