@@ -9,14 +9,6 @@ import '../stylesheets/normalize.css';
 import '../stylesheets/main.css';
 import { ToastContainer } from "react-toastify";
 
-/*axios.defaults.headers.common['Authorization'] = 'Bearer 19150755-18ebc4fb910ab3d1add5e1d5a';
-
-const fetchPhotos = ({ key= '19150755-18ebc4fb910ab3d1add5e1d5a', searchQuery= '', page= 1 }) => {
-  return axios
-  .get(`https://pixabay.com/api/?page=${page}&key=${key}&image_type=photo&orientation=horizontal&per_page=12`)
-      .then(response => response.data.hits )
-}*/
-
 export default function App() {
   const [photos, setPhotos] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
