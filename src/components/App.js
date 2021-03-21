@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import Searchbar from './Searchbar/Searchbar';
 import Modal from './Modal/Modal'
@@ -33,7 +33,6 @@ export default function App() {
 
   useEffect(() => {
     setLoading(true);
-    
     axios
       .get(`${URL.current}?q=${searchQuery}&page=${page}&key=${KEY.current}&image_type=photo&orientation=horizontal&per_page=12`)
       .then(response => {setPhotos(prevPhotos => [...prevPhotos, ...response.data.hits])})
@@ -51,12 +50,10 @@ export default function App() {
     setPage(page + 1);
   };
    
-  const toggleModal = (photo) => {
-    //setShowModal(!showModal );
-    console.log('largeImageURL', photo.largeImageURL);
-    console.log('tags', photo.tags);
+  const toggleModal = useCallback((photo) => {
+    setShowModal(prevShowModal => !prevShowModal);
     setLargePhoto(photo);
-  };
+  }, []);
 
   return (
     <>
